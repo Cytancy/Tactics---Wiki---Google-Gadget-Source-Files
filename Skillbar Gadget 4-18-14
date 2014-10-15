@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Skillbar Gadget [Author: CY Tan]"
+        height="242" scrolling="false">
+        <Require feature="dynamic-height"/>
+    </ModulePrefs>
+    <UserPref name="abilityname" display_name="Ability Name" default_value="" datatype="String"/>
+    <UserPref name="desc" display_name="Description" default_value="" datatype="String"/>
+    <UserPref name="arr" display_name="Details List ('|' Delimited)" datatype="Array" default_value="None available"/>
+    <UserPref name="skilltype" 
+        display_name="Skill Type"
+        datatype="enum"
+        default_value="1">
+        <EnumValue value="1" display_value="Passive"/>
+        <EnumValue value="2" display_value="Spell"/>
+        <EnumValue value="3" display_value="Technique"/>
+        <EnumValue value="4" display_value="Standard"/>
+    </UserPref>
+    <UserPref name="elementprop" 
+        display_name="Elemental Property"
+        datatype="enum"
+        default_value="1">
+        <EnumValue value="1" display_value="None"/>
+        <EnumValue value="2" display_value="Normal"/>
+        <EnumValue value="3" display_value="Fire"/>
+        <EnumValue value="4" display_value="Water"/>
+        <EnumValue value="5" display_value="Earth"/>
+        <EnumValue value="6" display_value="Wind"/>
+        <EnumValue value="7" display_value="Light"/>
+        <EnumValue value="8" display_value="Dark"/>
+        <EnumValue value="9" display_value="Weapon"/>
+    </UserPref>
+    <UserPref name="cpcost" display_name="CP Cost" default_value="--" datatype="String"/>
+    <UserPref name="epcost" display_name="EP Cost" default_value="--" datatype="String"/>
+    <UserPref name="range_w" display_name="Weapon Range? (Overrides Range Value &amp; Description" default_value="false" datatype="bool"/>
+    <UserPref name="range_v" display_name="Range Value" default_value="" datatype="String"/>
+    <UserPref name="range_d" display_name="Range Value" default_value="" datatype="String"/>
+    <UserPref name="aoe_w" display_name="Weapon AOE? (Overrides AOE Value &amp; Description" default_value="false" datatype="bool"/>
+    <UserPref name="aoe_v" display_name="AOE Value" default_value="" datatype="String"/>
+    <UserPref name="aoe_d" display_name="AOE Value" default_value="" datatype="String"/>
+    <Content type="html"><![CDATA[
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <script>
+            $(document).ready(function(){
+              $("button.init").click(function(){
+                $("div.toggle").slideDown({step: (function() {setContent();})}, 250);
+                $("div.toggle2").toggle();
+                //$("img.minitab").animate({ opacity: 0 }, 0)
+              });
+            });
+        
+            $(document).ready(function(){
+              $("button.closeit").click(function(){
+                $("div.toggle").slideUp({step: (function() {setContent();})}, 250);
+                setTimeout(function() {$("div.toggle2").fadeToggle(200);}, 300);
+                //$("img.minitab").animate({ opacity: 1 }, 0)
+                setContent();
+                });
+            });
+        </script>             
+        
+        <script type="text/javascript">
+           // Get userprefs
+           var prefs = new gadgets.Prefs();
+            
+            function setContent() {
+               gadgets.window.adjustHeight();
+               gadgets.window.adjustHeight();
+            }
+            
+            function changeColor(thecolor) {
+                var cols =     document.getElementsByClassName('bild');
+                for(i=0; i<cols.length; i++) {
+                    cols[i].style.color = "#a2d789";
+                }
+            }
+            
+            function replaceText () {
+                var element = document.getElementById('description');
+                element.innerHTML = prefs.getString("desc").replace(' [', " <b id='num'>[").replace('] ', "]</b> ").replace(' [', " <b id='num2'>[").replace('] ', "]</b> ").replace(' [', " <b id='num3'>[").replace('] ', "]</b> ").replace(']%', ']%</b>').replace('].', ']</b>.') + "<b id='num'></b><b id='num2'></b><b id='num3'></b>";
+                
+            }
+            
+            function setupList() {
+                var element = document.getElementById('detaillist');
+                var details = prefs.getArray("arr");
+                var html = "";
+                
+                for (var i = 0; i < details.length; i++) {
+                    html += "<li>" + details[i] + "</li>";
+                }
+                element.innerHTML = html;
+            }
+            
+            function setupRest() {
+                document.getElementById('cpid').innerHTML = prefs.getString("cpcost");
+                document.getElementById('epid').innerHTML = prefs.getString("epcost");
+                document.getElementById('titleid').innerHTML = prefs.getString("abilityname");
+                
+                if (prefs.getBool("range_w")) {
+                    document.getElementById('rangenum').innerHTML = "";
+                    document.getElementById('rangedesc').innerHTML = "ATK. RANGE";
+                }
+                else {
+                    document.getElementById('topicon').style.display = 'none';
+                    document.getElementById('rangenum').innerHTML = prefs.getString("range_v");
+                    document.getElementById('rangedesc').innerHTML = prefs.getString("range_d").toUpperCase();
+                }
+                
+                if (prefs.getBool("aoe_w")) {
+                    document.getElementById('aoenum').innerHTML = "";
+                    document.getElementById('aoedesc').innerHTML = "ATK. RANGE";
+                }
+                else {
+                    document.getElementById('bottomicon').style.display = 'none';
+                    document.getElementById('aoenum').innerHTML = prefs.getString("aoe_v");
+                    document.getElementById('aoedesc').innerHTML = prefs.getString("aoe_d").toUpperCase();
+                }
+                
+                if (!prefs.getBool("range_w") && prefs.getString("range_v").length == 0) {
+                    document.getElementById("topx").style.display = "inline";
+                    
+                }
+                
+                if (!prefs.getBool("range_w") && prefs.getString("range_d").length == 0) {
+                    document.getElementById('rangedesc').innerHTML = "NON-TARGET";
+                }
+                
+                
+                        
+                if (!prefs.getBool("aoe_w") && prefs.getString("aoe_v").length == 0) {
+                    document.getElementById("bottomx").style.display = "inline";
+                    
+                }      
+                
+                 if (!prefs.getBool("aoe_w") && prefs.getString("aoe_d").length == 0) {
+                    document.getElementById('aoedesc').innerHTML = "NON-TARGET";
+                }
+                
+                
+            }
+            
+            function doSkillType() {
+                var value = parseInt(prefs.getString("skilltype")); //pass spell tech stand
+                switch(value)
+                {
+                    case 1:
+                        document.getElementById("skillbg").src = "http://i.imgur.com/I6bddNo.png";
+                        document.getElementById("littletab").src = "http://i.imgur.com/I2TJX3y.png";
+                        document.getElementById("bigtab").src = "http://i.imgur.com/fi5nNwC.png";
+                        document.getElementById("num").style.color = "#a2d789";
+                        document.getElementById("num2").style.color = "#a2d789";
+                        document.getElementById("num3").style.color = "#a2d789";
+                        break;
+                    case 2:
+                        document.getElementById("skillbg").src = "http://i.imgur.com/7o803CQ.png";
+                        document.getElementById("littletab").src = "http://i.imgur.com/b4NWUtl.png";
+                        document.getElementById("bigtab").src = "http://i.imgur.com/zfMfaO9.png";
+                        document.getElementById("num").style.color = "#7ec8fc";
+                        document.getElementById("num2").style.color = "#7ec8fc";
+                        document.getElementById("num3").style.color = "#7ec8fc";
+                        break;
+                    case 3:
+                        document.getElementById("skillbg").src = "http://i.imgur.com/a2OIsgS.png";
+                        document.getElementById("littletab").src = "http://i.imgur.com/QRrQKIB.png";
+                        document.getElementById("bigtab").src = "http://i.imgur.com/eSYcvfg.png";
+                        document.getElementById("num").style.color = "#f57777";
+                        document.getElementById("num2").style.color = "#f57777";
+                        document.getElementById("num3").style.color = "#f57777";
+                        break;
+                    case 4:
+                        document.getElementById("skillbg").src = "http://i.imgur.com/6W5Pm2u.png";
+                        document.getElementById("littletab").src = "http://i.imgur.com/P3ai8Uy.png";
+                        document.getElementById("bigtab").src = "http://i.imgur.com/ePL4qq9.png";
+                        document.getElementById("num").style.color = "#e9be27";
+                        document.getElementById("num2").style.color = "#e9be27";
+                        document.getElementById("num3").style.color = "#e9be27";
+                        break;
+                    default:
+                        document.getElementById("skillbg").src = "http://i.imgur.com/FsdlRXw.jpg";
+                        break;
+                }
+                
+                var value2 = parseInt(prefs.getString("elementprop")); 
+                switch(value2) //attach text to image icon
+                {
+                    case 1:
+                        document.getElementById("elemicon").src = "";
+                        break;
+                    case 2:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/7q2kvK6.png";
+                        break;
+                    case 3:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/cWhV4MC.png";
+                        break;
+                    case 4:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/WsNMFFM.png";
+                        break;
+                    case 5:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/KNGySbi.png";
+                        break;
+                    case 6:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/YozFX61.png";
+                        break;
+                    case 7:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/h1Sb4wz.png";
+                        break;
+                    case 8:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/21LCrKf.png";
+                        break;
+                    case 9:
+                        document.getElementById("elemicon").src = "http://i.imgur.com/tfK1sNa.png";
+                        break;
+                }
+                
+               
+            }
+            
+            function doWork() {
+                replaceText();
+                setupList();
+                setupRest();
+                doSkillType();
+            }
+            gadgets.util.registerOnLoadHandler(doWork);
+        </script>
+           
+        <style type="text/css">
+            div.skillbar {
+                margin-top: 10px;
+                height: auto;
+                overflow:hidden;
+            }
+            div.title {
+                position:absolute;
+                font-size: 25px;
+                font-weight:bold;
+                left:105px;
+                top:52px;
+                color:#5b5b5b;
+                z-index: 2;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+            }
+            div.desc {
+                position:absolute;
+                left:105px;
+                top:97px;
+                color:#222222;
+                width: 586px;
+                z-index: 2;
+            }
+            div.cp {
+                position:absolute;
+                left:527px;
+                top:56px;
+                color:#787878;
+                width: 34px;
+                font-weight:bold;
+                text-align:center;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                z-index: 2;
+            }
+            div.ep {
+                position:absolute;
+                left:624px;
+                top:56px;
+                color:#787878;
+                width: 34px;
+                font-weight:bold;
+                text-align:center;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                z-index: 2;
+            }
+        
+            b {
+                color:#e89d3b;
+            }
+          
+            div.info{
+                margin-top: -12px;
+                margin-left: 123px;
+                width: 572px;
+                box-shadow: 0px 5px 14px #c6c6c6;
+            }
+          
+            div.infotext{
+                margin-left: 14px;
+                padding-top: 12px;
+                width: 544px;
+            }
+          
+            div.toggle{
+                display:none;
+            }
+          
+            div.wrapper{
+               position:relative;
+               margin-left: 5px;
+               overflow: hidden
+            }
+          
+            img.bg {
+                position:relative;
+                left:0;
+                top:0;
+                z-index: 1;
+            }
+          
+            img.tab {
+                margin-left: 119px;
+                position:relative;
+            }
+            img.tab2 {
+                margin-left: 119px; 
+                margin-top: -46px;
+                position:relative;
+                z-index: 1;
+                opacity:0;
+            }
+        
+            img.minitab {
+                position:relative;
+                margin-left:334px;
+                margin-top:-14px;
+        
+            }
+          
+            img.minitab2 {
+                position:absolute;
+                left:334px;
+                top: 204px;
+                display: none;
+                z-index: 0;
+              
+            }
+            
+            p.space{
+                display: none;
+            }
+        
+         
+            button.init{
+                position:absolute;
+                width: 154px;
+                height: 29px;
+                left:334px;
+                top: 202px;
+                z-index: 2;
+                background:transparent;
+                border:none;
+                outline:none;
+                display:block;
+                cursor:pointer;
+            }
+            
+            button.closeit{
+                position:relative;
+                width: 154px;
+                height: 29px;
+                margin-left:334px;
+                margin-top: -45px;
+            
+                z-index: 2;
+                background:transparent;
+                border:none;
+                outline:none;
+                display:block;
+                cursor:pointer;
+            }
+            
+            ul {
+                margin: 0px;
+            }
+            
+            #rangenum{
+                position: absolute;
+                text-align:center;
+                width: 73px;
+                height: 25px;
+                top: 63px;
+                left: 3px;
+                font-size: 32;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                color: white;
+                
+                z-index: 2;
+            }
+            
+            #aoenum{
+                position: absolute;
+                text-align:center;
+                width: 73px;
+                height: 25px;
+                top: 148px;
+                left: 3px;
+                font-size: 32;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                color: white;
+                z-index: 2;
+            }
+            
+            #rangedesc{
+                position: absolute;
+                text-align:center;
+                width: 78px;
+                height: 27px;
+                top: 100px;
+                left: 1px;
+                font-size: 10;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                color: white;
+                font-weight:bold;
+                z-index: 2;
+            }
+            #aoedesc{
+                position: absolute;
+                text-align:center;
+                width: 78px;
+                height: 27px;
+                top: 185px;
+                left: 1px;
+                font-size: 10;
+                -webkit-font-smoothing: antialiased;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+                color: white;
+                font-weight:bold;
+                z-index: 2;
+            }
+            
+            #topicon {
+                position:absolute;
+                left:0;
+                top:10;
+                z-index: 3;
+            }
+            #bottomicon {
+                position:absolute;
+                left:0;
+                top:10;
+                z-index: 3;
+            }
+            #topx {
+                position:absolute;
+                left:2;
+                top:10;
+                z-index: 3;
+                display:none;
+            }
+            #bottomx {
+                position:absolute;
+                left:2;
+                top:10;
+                z-index: 3;
+                display:none;
+            }
+            
+            #elemprop{
+                position: absolute;
+                font-size: 11px;
+                text-align: center;
+                font-weight: bold;
+                color: #b9b9b9;
+                z-index: 2;
+                width: 74px;
+                height: 14px;
+                left:392px;
+                top:62px;
+            }
+            
+            #elemicon {
+                position: absolute;
+                top: 41px;
+                left: 667px;
+                z-index: 2;
+            }
+            
+        </style>               
+        
+        <div class="wrapper">
+            <div class="skillbar">
+                <img id="skillbg" class="bg" src="http://i.imgur.com/0EY0JPs.png">
+                <div class="title" id="titleid">Name Load Failure.</div>
+                <div class="desc" id="description">Text Load Failure.</div>               
+                <div class="cp" id="cpid">--</div>               
+                <div class="ep" id="epid">--</div>
+                <img id="elemicon" src="http://i.imgur.com/cWhV4MC.png">
+                <div id="rangenum">?</div>
+                <div id="rangedesc">?</div>
+                <div id="aoenum">?</div>
+                <div id="aoedesc">?</div>
+                <img id="topicon" src="http://i.imgur.com/meyLRKB.png">
+                <img id="bottomicon" src="http://i.imgur.com/iUWlBYU.png">
+                <img id="topx" src="http://i.imgur.com/LU5JdV9.png">
+                <img id="bottomx" src="http://i.imgur.com/tHVyH7Q.png">
+                <div class="toggle2">
+                    <img class="minitab" src="http://i.imgur.com/jYfvxmv.png">
+                    <img class="minitab2" id="littletab" src="http://i.imgur.com/PZQzBLd.png">
+                    <p class="space"></p> 
+                    <button class="init"></button>
+                </div>
+                <div class="toggle">
+                    <div class="info"><div class="infotext">           
+                        <ul id="detaillist"><li>List load failure.</li></ul>           
+                    </div></div>               
+                    <img class="tab" src="http://i.imgur.com/YlwQam1.png">
+                    <button class="closeit"></button>
+                    <img class="tab2" id="bigtab" src="http://i3.minus.com/ibtHyygX2tVG8f.png">
+                    <p></p>             
+                </div>
+                <img src="http://i.imgur.com/3VlCKVE.jpg" height="5" width="970">        
+            </div>
+        </div>            
+        
+        <script>
+            $( "button.init" ).hover(function() {
+              $( "img.minitab2" ).filter(':not(:animated)').fadeIn(150);
+              $("img.minitab").filter(':not(:animated)').animate({ opacity: 0 }, 150)
+            },function() {
+               $("img.minitab").animate({ opacity: 1 }, 150)
+              $( "img.minitab2" ).fadeOut(150);
+            });
+              
+              
+            $( "button.closeit" ).hover(function() {
+              $( "img.tab2" ).filter(':not(:animated)').animate({ opacity: 1 }, 150);
+            
+            
+            },function() {
+              $( "img.tab2" ).animate({ opacity: 0 }, 150);
+            });
+        </script>            
+]]></Content>
+</Module>
