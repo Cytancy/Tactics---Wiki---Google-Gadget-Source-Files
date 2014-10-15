@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Class Info Gadget [Author: CY Tan]"
+        width = "360" height="780" scrolling="false">
+        <Require feature="dynamic-height"/>
+    </ModulePrefs>
+    <UserPref name="hp" display_name="HP" default_value="" datatype="int"/>
+    <UserPref name="ep" display_name="EP" default_value="" datatype="int"/>
+    <UserPref name="hpregen" display_name="HP Regen" default_value="" datatype="int"/>
+    <UserPref name="epregen" display_name="EP Regen" default_value="" datatype="int"/>
+    <UserPref name="def" display_name="DEF" default_value="" datatype="int"/>
+    <UserPref name="mdef" display_name="MDEF" default_value="" datatype="int"/>
+    <UserPref name="wt" display_name="WT" default_value="" datatype="int"/>
+    <UserPref name="spd" display_name="SPD" default_value="" datatype="int"/>
+    <UserPref name="move" display_name="Move" default_value="" datatype="int"/>
+    <UserPref name="jump" display_name="Jump" default_value="" datatype="int"/>
+    <Content type="html"><![CDATA[
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+        
+        <script type="text/javascript">
+            var prefs = new gadgets.Prefs();
+            
+            function valueSetup() {
+                document.getElementById('hpval').innerHTML = prefs.getInt("hp");
+                document.getElementById('epval').innerHTML = prefs.getInt("ep");
+                document.getElementById('hpregenval').innerHTML = prefs.getInt("hpregen");
+                document.getElementById('epregenval').innerHTML = prefs.getInt("epregen");
+                document.getElementById('defval').innerHTML = prefs.getInt("def");
+                document.getElementById('mdefval').innerHTML = prefs.getInt("mdef");
+                document.getElementById('wtval').innerHTML = prefs.getInt("wt");
+                document.getElementById('spdval').innerHTML = prefs.getInt("spd");
+                document.getElementById('moveval').innerHTML = prefs.getInt("move");
+                document.getElementById('jumpval').innerHTML = prefs.getInt("jump");
+            }
+            
+            gadgets.util.registerOnLoadHandler(valueSetup);
+        </script>
+        
+        <style type="text/css">
+            #bg {
+                position: absolute;
+                box-shadow: 0px 2px 8px #aaaaaa;
+                top: 12px;
+                left: 5px;
+            }
+            
+            .statbutton{
+                position: absolute;
+                top: 12px;
+                left: 5px;
+                z-index: 1;
+                display: none;
+            }
+            
+            #rev{
+                position: absolute;
+                top: 25px;
+                left: 3px;
+                z-index: 2;
+            }
+            
+            #info{
+                position: absolute;
+                top: 475px;
+                left: 12px;
+                background: transparent;
+                color: #747474;
+                width:332px;
+                border:none;
+                border-collapse:collapse
+            }
+            
+            th {
+                font-size: 16px;
+                font-weight:bold;
+                text-align:CENTER;
+            }
+  
+            td {
+                font-size: 16px;
+                font-weight:bold;
+                text-align:center;
+                padding:5px;
+            }
+
+            .rbar {
+                width: 40px;
+                color: #9e9d9d;
+            }
+            
+            #strslider{
+                position: absolute;
+                top: 637px;
+                left: 64px;
+                z-index: 2;
+            }
+            
+            #intslider{
+                position: absolute;
+                top: 660px;
+                left: 64px;
+                z-index: 2;
+            }
+            
+            #agislider{
+                position: absolute;
+                top: 683px;
+                left: 64px;
+                z-index: 2;
+            }
+            
+            #tghslider{
+                position: absolute;
+                top: 706px;
+                left: 64px;
+                z-index: 2;
+            }
+            
+            #conslider{
+                position: absolute;
+                top: 729px;
+                left: 64px;
+                z-index: 2;
+            }
+            
+            .ui-slider-horizontal .ui-state-default {
+                background: transparent url(http://i.imgur.com/LJgY0Kk.png) no-repeat scroll 0% 0%;
+            }
+            .ui-state-focus:focus { outline:0px !important }
+            
+            .ui-slider  {
+                width: 280px;
+                //border: 0px;
+                border-color:#e7e7e7;
+                height: 18px;
+                background: white url(http://i.imgur.com/dtdT2O2.png) no-repeat scroll 0% 0%;
+            
+            }
+            
+            .ui-slider .ui-slider-handle {
+                cursor: pointer;
+                height: 12px;
+                position: absolute;
+                width: 25px;
+                z-index: 2;
+                margin-top:7px;
+                margin-left: 2px;
+                border-color:transparent;
+            }
+            
+            .tooltip2 {
+                position: absolute;
+                z-index: 1020;
+                display: block;
+                padding: 5px;
+                font-size: 11px;
+                visibility: visible;
+                margin-top: -2px;
+                bottom:120%;
+                margin-left: -5px;
+                //display: none;
+            }
+            
+            .tooltip2 .tooltip-arrow2 {
+                bottom: 0;
+                left: 50%;
+                margin-left: -6px;
+                border-top: 5px solid #878787;
+                border-right: 5px solid transparent;
+                border-left: 5px solid transparent;
+                position: absolute;
+                width: 0;
+                height: 0;
+            }
+            
+            .tooltip-inner2 {
+                max-width: 200px;
+                padding: 3px 8px;
+                color: #ffffff;
+                text-align: center;
+                font-weight: bold;
+                text-decoration: none;
+                background-color: #878787;
+                -webkit-border-radius: 4px;
+                   -moz-border-radius: 4px;
+                        border-radius: 4px;
+            }
+            
+            .tooltip {
+                position: absolute;
+                z-index: 1020;
+                display: block;
+                padding: 5px;
+                font-size: 11px;
+                visibility: visible;
+                margin-top: -9px;
+                //bottom:40%;
+                margin-left: -5px;
+                //display: none;
+                width: 25px;
+            }
+            
+            .tooltip .tooltip-arrow {
+                bottom: 0;
+                left: 50%;
+                margin-left: -6px;
+                border-top: 1px solid transparent;
+                border-right: 1px solid transparent;
+                border-left: 1px solid transparent;
+                position: absolute;
+                width: 0;
+                height: 0;
+            }
+            
+            .tooltip-inner {
+                max-width: 200px;
+                padding: 3px 0px;
+                color: #ffffff;
+                text-align: center;
+                font-weight: bold;
+                text-decoration: none;
+                background-color: rgba(135,135,135,0.5);
+                -webkit-border-radius: 4px;
+                   -moz-border-radius: 4px;
+                        border-radius: 4px;
+            }
+            
+            .con {
+                position: absolute;
+                top: 15px;
+                left: 0px;
+            }
+            .int {
+                position: absolute;
+                top: 40px;
+                left: 0px;
+            }
+            
+            #title {
+                position: absolute;
+                top: 49px;
+                left: 26px;
+                font-weight: bold;
+                text-align: center;
+                font-size: 30px;
+            }
+        </style>               
+        
+        <div class="wrapper">
+            <div class="infobox">
+                <img id="bg" src="http://i.imgur.com/hObj7UG.png">
+                <div id="rev">rev64</div>
+            </div>
+            <div id="title">Alchemist</div>
+            <table id="info">
+                    <tr>
+                   <td class="head" id="leftbar">HP</td>               
+                   <td id="hpval" class="rbar">185</td>                
+                   <td class="head" id="leftbar">EP</td>               
+                   <td id="epval" class="rbar">35</td>               
+                    </tr>               
+                    <tr>
+                   <td class="head2" id="leftbar">HP REGEN</td>               
+                   <td id="hpregenval" class="rbar">8</td>                
+                   <td class="head2" id="leftbar">EP REGEN</td>               
+                   <td id="epregenval" class="rbar">3</td>               
+                    </tr>               
+                    <tr>
+                   <td class="head" id="leftbar">DEF</td>               
+                   <td id="defval" class="rbar">12</td>                
+                   <td class="head" id="leftbar">MDEF</td>               
+                   <td id="mdefval" class="rbar">14</td>               
+                    </tr>               
+                    <tr>
+                   <td class="head2" id="leftbar">WT</td>               
+                   <td id="wtval" class="rbar" >125</td>                
+                   <td class="head2" id="leftbar">SPD</td>               
+                   <td id="spdval" class="rbar">9</td>               
+                    </tr>               
+                    <tr>
+                   <td class="head" id="leftbar">MOVE</td>               
+                   <td id="moveval" class="rbar">4</td>                
+                   <td class="head" id="leftbar">JUMP</td>               
+                   <td id="jumpval" class="rbar">3</td>               
+                    </tr>               
+            </table>
+            <img id="strimg" class="statbutton" src="http://i.imgur.com/7KUZoPw.png">
+            <img id="intimg" class="statbutton" src="http://i.imgur.com/Qa29zs9.png">
+            <img id="conimg" class="statbutton" src="http://i.imgur.com/Li2x71H.png">
+            <img id="tghimg" class="statbutton" src="http://i.imgur.com/NhovZGA.png">
+            <img id="agiimg" class="statbutton" src="http://i.imgur.com/CfIWKFJ.png">
+            <div id="strslider"></div>
+            <div id="intslider"></div>
+            <div id="agislider"></div>
+            <div id="tghslider"></div>
+            <div id="conslider"></div>
+            <div class="con">0</div>
+            <div class="int">0</div>
+    </div>
+    
+    
+    
+    <script> //str stat
+        var sliderToolcreate = function(event, ui) {
+            if(typeof ui.value === 'undefined'){
+                ui.value = 0;
+            }
+            ui.value = 0;
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">'
+            +  ui.value + '</div><div class="tooltip-arrow"></div></div>';
+            $(this).find('.ui-slider-handle').html(tooltip);
+            $("div.tooltip").fadeOut(0);
+        } 
+    
+        var sliderTooltip = function(event, ui) {
+            var total = ui.value;
+            $(this).not(this).each(function () {
+                total += $(this).slider('value');
+            })
+
+            if (total > 99) {
+                return false;
+            }
+            var curValue = ui.value;
+            var tooltip = '<div class="tooltip2"><div class="tooltip-inner2">'
+            + curValue + '</div><div class="tooltip-arrow2"></div></div>';
+            
+            $(this).find('.ui-slider-handle').html(tooltip);
+            
+            $("#strimg").filter(':not(:animated)').fadeIn();                            //change this
+            $('#wtval').filter(':not(:animated)').animate({ color: "#f57777" }, 250);   //change this
+            $('#wtval').html(Math.round(gadgets.Prefs().getInt("wt") + curValue/3));                             //change these
+        }
+        
+        $("#strslider").slider({                                                        //change this
+            orientation: "horizontal",
+            range: false,
+            min: 0,
+            value: 0,
+            max: 112,
+            value: 0,
+            animate: true,
+            create: sliderToolcreate,  
+            slide:  sliderTooltip,
+            stop: sliderToolcreate,
+            change: function(){
+                $('#wtval').animate({ color: "#9e9d9d" }, 250);                             //change this
+                $("#strimg").fadeOut();                                                     //change this
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        }).hover(function()
+            {  
+                $("div.tooltip").filter(':not(:animated)').fadeIn();
+                $("div.tooltip2").filter(':not(:animated)').fadeIn();
+            }, 
+            function()
+            {  
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        );
+    </script>
+    
+    
+    <script> //int stat
+        var sliderToolcreate = function(event, ui) {
+            if(typeof ui.value === 'undefined'){
+                ui.value = 0;
+            }
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">'
+            +  ui.value + '</div><div class="tooltip-arrow"></div></div>';
+            $(this).find('.ui-slider-handle').html(tooltip);
+            $("div.tooltip").fadeOut(0);
+        } 
+    
+        var sliderTooltip = function(event, ui) {
+            var total = ui.value;
+            $(this).not(this).each(function () {
+                total += $(this).slider('value');
+            })
+
+            if (total > 99) {
+                return false;
+            }
+            
+            var curValue = ui.value;
+            var tooltip = '<div class="tooltip2"><div class="tooltip-inner2">'
+            + curValue + '</div><div class="tooltip-arrow2"></div></div>';
+            $('div.int').html(curValue);
+            $(this).find('.ui-slider-handle').html(tooltip);
+           
+            $("#intimg").filter(':not(:animated)').fadeIn();                            //change this
+            $('#epregenval').filter(':not(:animated)').animate({ color: "#7ec8fc" }, 250);   //change this and color
+            //$('div.con').html(curValue);
+            $('#epregenval').html(Math.round(gadgets.Prefs().getInt("epregen") * (1 + curValue * 0.025 + parseInt($( "div.con" ).text()) * 0.01)));    //change these
+        }
+        
+        $("#intslider").slider({                                                        //change this
+            orientation: "horizontal",
+            range: false,
+            min: 0,
+            max: 112,
+            value: 0,
+            animate: true,
+            create: sliderToolcreate,  
+            slide:  sliderTooltip,
+            stop: sliderToolcreate,
+            change: function(){
+                $('#epregenval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $("#intimg").fadeOut();                                                     //change this
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        }).hover(function()
+            {  
+                $("div.tooltip").filter(':not(:animated)').fadeIn();
+                $("div.tooltip2").filter(':not(:animated)').fadeIn();
+            }, 
+            function()
+            {  
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        );
+    </script>
+    
+    <script> //agi stat
+        var sliderToolcreate = function(event, ui) {
+            if(typeof ui.value === 'undefined'){
+                ui.value = 0;
+            }
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">'
+            +  ui.value + '</div><div class="tooltip-arrow"></div></div>';
+            $(this).find('.ui-slider-handle').html(tooltip);
+            $("div.tooltip").fadeOut(0);
+        } 
+    
+        var sliderTooltip = function(event, ui) {
+            var total = ui.value;
+            $(this).not(this).each(function () {
+                total += $(this).slider('value');
+            })
+
+            if (total > 99) {
+                return false;
+            }
+            
+            var curValue = ui.value;
+            var tooltip = '<div class="tooltip2"><div class="tooltip-inner2">'
+            + curValue + '</div><div class="tooltip-arrow2"></div></div>';
+            
+            $(this).find('.ui-slider-handle').html(tooltip);
+           
+            $("#agiimg").filter(':not(:animated)').fadeIn();                            //change this
+            $('#spdval').filter(':not(:animated)').animate({ color: "#8cd16b" }, 250);   //change this and color
+            //$('div.con').html(curValue);
+            $('#spdval').html(Math.round(gadgets.Prefs().getInt("spd") * (1 + curValue * 0.03)));    //change these
+        }
+        
+        $("#agislider").slider({                                                        //change this
+            orientation: "horizontal",
+            range: false,
+            min: 0,
+            max: 112,
+            value: 0,
+            animate: true,
+            create: sliderToolcreate,  
+            slide:  sliderTooltip,
+            stop: sliderToolcreate,
+            change: function(){
+                $('#spdval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $("#agiimg").fadeOut();                                                     //change this
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        }).hover(function()
+            {  
+                $("div.tooltip").filter(':not(:animated)').fadeIn();
+                $("div.tooltip2").filter(':not(:animated)').fadeIn();
+            }, 
+            function()
+            {  
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        );
+    </script>
+  
+    <script> //tgh stat
+        var sliderToolcreate = function(event, ui) {
+            if(typeof ui.value === 'undefined'){
+                ui.value = 0;
+            }
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">'
+            +  ui.value + '</div><div class="tooltip-arrow"></div></div>';
+            $(this).find('.ui-slider-handle').html(tooltip);
+            $("div.tooltip").fadeOut(0);
+        } 
+    
+        var sliderTooltip = function(event, ui) {
+            var total = ui.value;
+            $(this).not(this).each(function () {
+                total += $(this).slider('value');
+            })
+
+            if (total > 99) {
+                return false;
+            }
+            
+            var curValue = ui.value;
+            var tooltip = '<div class="tooltip2"><div class="tooltip-inner2">'
+            + curValue + '</div><div class="tooltip-arrow2"></div></div>';
+            
+            $(this).find('.ui-slider-handle').html(tooltip);
+           
+            $("#tghimg").filter(':not(:animated)').fadeIn();                            //change this
+            $('#hpval').filter(':not(:animated)').animate({ color: "#fbbd37" }, 250);   //change this and color
+            $('#hpval').html(Math.round(gadgets.Prefs().getInt("hp") * (1 + curValue * 0.035)));    //change these
+            $('#defval').filter(':not(:animated)').animate({ color: "#fbbd37" }, 250);   //change this and color
+            $('#defval').html(Math.round(gadgets.Prefs().getInt("def") * (1 + curValue * 0.02)));    //change these
+        }
+        
+        $("#tghslider").slider({                                                        //change this
+            orientation: "horizontal",
+            range: false,
+            min: 0,
+            max: 112,
+            value: 0,
+            animate: true,
+            create: sliderToolcreate,  
+            slide:  sliderTooltip,
+            stop: sliderToolcreate,
+            change: function(){
+                $('#hpval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $('#defval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $("#tghimg").fadeOut();                                                     //change this
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        }).hover(function()
+            {  
+                $("div.tooltip").filter(':not(:animated)').fadeIn();
+                $("div.tooltip2").filter(':not(:animated)').fadeIn();
+            }, 
+            function()
+            {  
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        );
+    </script>
+    
+    <script> //con stat
+        var sliderToolcreate = function(event, ui) {
+            if(typeof ui.value === 'undefined'){
+                ui.value = 0;
+            }
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">'
+            +  ui.value + '</div><div class="tooltip-arrow"></div></div>';
+            $(this).find('.ui-slider-handle').html(tooltip);
+            $("div.tooltip").fadeOut(0);
+        } 
+    
+        var sliderTooltip = function(event, ui) {
+            var total = ui.value;
+            $(this).not(this).each(function () {
+                total += $(this).slider('value');
+            })
+
+            if (total > 99) {
+                return false;
+            }
+            
+            var curValue = ui.value;
+            var tooltip = '<div class="tooltip2"><div class="tooltip-inner2">'
+            + curValue + '</div><div class="tooltip-arrow2"></div></div>';
+            $('div.con').html(curValue);
+            $(this).find('.ui-slider-handle').html(tooltip);
+           
+            $("#conimg").filter(':not(:animated)').fadeIn();                            //change this
+            $('#mdefval').filter(':not(:animated)').animate({ color: "#ed8aff" }, 250);   //change this and color
+            $('#mdefval').html(Math.round(gadgets.Prefs().getInt("mdef") * (1 + curValue * 0.02)));    //change these
+            $('#hpregenval').filter(':not(:animated)').animate({ color: "#ed8aff" }, 250);   //change this and color
+            $('#hpregenval').html(Math.round(gadgets.Prefs().getInt("hpregen") * (1 + curValue * 0.05)));    //change these
+            $('#epregenval').filter(':not(:animated)').animate({ color: "#ed8aff" }, 250);   //change this and color
+            $('#epregenval').html(Math.round(gadgets.Prefs().getInt("epregen") * (1 + curValue * 0.01 + parseInt($( "div.int" ).text()) * 0.025)));    //change these
+        }
+        
+        $("#conslider").slider({                                                        //change this
+            orientation: "horizontal",
+            range: false,
+            min: 0,
+            max: 112,
+            value: 0,
+            animate: true,
+            create: sliderToolcreate,  
+            slide:  sliderTooltip,
+            stop: sliderToolcreate,
+            change: function(){
+                $('#epregenval').animate({ color: "#9e9d9d" }, 250);
+                $('#mdefval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $('#hpregenval').animate({ color: "#9e9d9d" }, 250);                              //change this
+                $("#conimg").fadeOut();                                                     //change this
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        }).hover(function()
+            {  
+                $("div.tooltip").filter(':not(:animated)').fadeIn();
+                $("div.tooltip2").filter(':not(:animated)').fadeIn();
+            }, 
+            function()
+            {  
+                $("div.tooltip").fadeOut();
+                $("div.tooltip2").fadeOut();
+            }
+        );
+    </script>
+    
+    
+]]></Content>
+</Module>
